@@ -24,6 +24,8 @@ def main():
     success, msg = login_user("alice", "SecurePass123!")
     print(msg)
 
+    total_rows = load_all_csv_data()
+
     # 4. Test CRUD
     incident_id = insert_incident(
         "2024-11-05",
@@ -38,6 +40,20 @@ def main():
     # 5. Query data
     df = get_all_incidents()
     print(f"Total incidents: {len(df)}")
+
+    type_counts = get_incidents_by_type_count()
+    print(f"   Incident types: {len(type_counts)}")
+
+    users = get_all_users()
+    print(f"   Total users: {len(users)}")
+
+    print("\n" + "=" * 60)
+    print("🎉 Demo completed successfully!")
+    print("=" * 60)
+    print("\n📊 Database Summary:")
+    print(f"   - Users: {len(users)}")
+    print(f"   - Incidents: {len(incidents_df)}")
+    print(f"   - Incident types: {len(type_counts)}")
 
 
 if __name__ == "__main__":

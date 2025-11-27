@@ -22,3 +22,12 @@ def insert_user(username, password_hash, role='user'):
     )
     conn.commit()
     conn.close()
+
+def get_all_users():
+    """Get all users."""
+    conn = connect_database()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, role FROM users")
+    users = cursor.fetchall()
+    conn.close()
+    return users
