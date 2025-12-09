@@ -3,27 +3,26 @@ import pandas as pd
 from pathlib import Path
 from app.data.db import connect_database
 from app.data.users import get_user_by_username, insert_user
-from app.data.schema import create_users_table
 
 
 def register_user(username, password, role="user"):
-    """Register a new user."""
+    """Register a new user - SIMPLE VERSION."""
     conn = connect_database()
     cursor = conn.cursor()
 
-    # Check if user already exists
+    # Check if user exists
     cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
     if cursor.fetchone():
         conn.close()
         return False, f"Username '{username}' already exists."
 
-    # Hash the password
+    # Hash password
     password_bytes = password.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password_bytes, salt)
     password_hash = hashed.decode('utf-8')
 
-    # Insert new user
+    # Insert user
     cursor.execute(
         "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
         (username, password_hash, role)
@@ -35,24 +34,31 @@ def register_user(username, password, role="user"):
 
 
 def login_user(username, password):
-    """Authenticate a user."""
+    """Authenticate a user - FIXED VERSION (returns 3 values)."""
     user = get_user_by_username(username)
     if not user:
-        return False, "Username not found."
+        return False, "Username not found.", None  # ← ADDED None as 3rd value
 
-    # Verify password (user[2] is password_hash column)
-    stored_hash = user[2]
+    stored_hash = user[2]  # password_hash column
     password_bytes = password.encode('utf-8')
     hash_bytes = stored_hash.encode('utf-8')
 
     if bcrypt.checkpw(password_bytes, hash_bytes):
-        return True, f"Welcome, {username}!"
+        # Create user_data dictionary from database row
+        # user = (id, username, password_hash, role, created_at)
+        user_data = {
+            'id': user[0],
+            'username': user[1],
+            'role': user[3] if len(user) > 3 else 'user',
+            'created_at': user[4] if len(user) > 4 else None
+        }
+        return True, f"Welcome, {username}!", user_data  # ← ADDED user_data as 3rd value
     else:
-        return False, "Invalid password."
+        return False, "Invalid password.", None  # ← ADDED None as 3rd value
 
 
 def migrate_users_from_file(filepath='DATA/users.txt'):
-    """Migrate users from text file to database."""
+    """Migrate users from text file to database - SIMPLE VERSION."""
     filepath = Path(filepath)
     if not filepath.exists():
         print(f"⚠️ File not found: {filepath}")
@@ -68,13 +74,11 @@ def migrate_users_from_file(filepath='DATA/users.txt'):
             if not line:
                 continue
 
-            # Parse line: username,password_hash
             parts = line.split(',')
             if len(parts) >= 2:
                 username = parts[0]
                 password_hash = parts[1]
 
-                # Insert user (ignore if already exists)
                 try:
                     cursor.execute(
                         "INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)",
@@ -82,7 +86,7 @@ def migrate_users_from_file(filepath='DATA/users.txt'):
                     )
                     if cursor.rowcount > 0:
                         migrated_count += 1
-                except sqlite3.Error as e:
+                except Exception as e:
                     print(f"Error migrating user {username}: {e}")
 
     conn.commit()
@@ -92,7 +96,7 @@ def migrate_users_from_file(filepath='DATA/users.txt'):
 
 
 def load_csv_to_table(csv_path, table_name):
-    """Load CSV data into database table."""
+    """Load CSV data into database table - SIMPLE VERSION."""
     csv_path = Path(csv_path)
     if not csv_path.exists():
         print(f"❌ CSV file not found: {csv_path}")
@@ -101,6 +105,15 @@ def load_csv_to_table(csv_path, table_name):
     conn = connect_database()
 
     try:
+        # Check if table has data
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+        count = cursor.fetchone()[0]
+
+        if count > 0:
+            print(f"⚠️  Skipping {table_name} - already has {count} rows")
+            return 0
+
         df = pd.read_csv(csv_path)
         rows_loaded = df.to_sql(
             name=table_name,
@@ -118,7 +131,7 @@ def load_csv_to_table(csv_path, table_name):
 
 
 def load_all_csv_data():
-    """Load all CSV files into database."""
+    """Load all CSV files into database - SIMPLE VERSION."""
     csv_files = {
         'cyber_incidents': 'DATA/cyber_incidents.csv',
         'datasets_metadata': 'DATA/datasets_metadata.csv',
