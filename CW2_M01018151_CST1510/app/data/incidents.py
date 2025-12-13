@@ -51,7 +51,7 @@ def delete_incident(incident_id):
     return rows_affected
 
 def get_incidents_by_type_count():
-    """Count incidents by type - SIMPLE VERSION."""
+    """Count incidents by type ."""
     conn = connect_database()
     query = """
     SELECT category, COUNT(*) as count
@@ -64,7 +64,7 @@ def get_incidents_by_type_count():
     return df
 
 def get_high_severity_by_status():
-    """Count high severity incidents by status - SIMPLE VERSION."""
+    """Count high severity incidents by status """
     conn = connect_database()
     query = """
     SELECT status, COUNT(*) as count

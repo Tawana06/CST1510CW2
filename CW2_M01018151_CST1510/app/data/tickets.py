@@ -17,7 +17,7 @@ def get_tickets_by_status(status):
     return df
 
 def insert_ticket(ticket_id, priority, description, status, assigned_to, created_at, resolution_time_hours):
-    """Insert new IT ticket - SIMPLE VERSION."""
+    """Insert new IT ticket."""
     conn = connect_database()
     cursor = conn.cursor()
     cursor.execute("""

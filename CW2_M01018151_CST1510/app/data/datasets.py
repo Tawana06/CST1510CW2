@@ -1,5 +1,5 @@
 import pandas as pd
-from app.data.db import connect_database   #TF is kwarggs
+from app.data.db import connect_database
 
 
 def get_all_datasets():
@@ -34,7 +34,7 @@ def insert_dataset(dataset_id, name, rows, columns, uploaded_by, upload_date):
 
 
 def update_dataset(dataset_id, **kwargs):
-    """Update dataset metadata - SIMPLE VERSION."""
+
     if not kwargs:
         return 0
 

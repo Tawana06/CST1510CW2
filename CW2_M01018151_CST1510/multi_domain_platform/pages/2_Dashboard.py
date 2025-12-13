@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
-from app.data.incidents import get_all_incidents
-from app.data.datasets import get_all_datasets
-from app.data.tickets import get_all_tickets
+from models.security_incident import SecurityIncident
+from models.dataset import Dataset
+from models.it_ticket import ITTicket
 
 # Page configuration
 st.set_page_config(
@@ -34,6 +34,17 @@ if not st.session_state.logged_in:
 
     st.stop()
 
+# Load data using OOP
+try:
+    incidents_df = SecurityIncident.get_all_incidents()
+    datasets_df = Dataset.get_all_datasets()
+    tickets_df = ITTicket.get_all_tickets()
+except Exception as e:
+    st.error(f"Error loading dashboard data: {e}")
+    incidents_df = pd.DataFrame()
+    datasets_df = pd.DataFrame()
+    tickets_df = pd.DataFrame()
+
 #dashboard content
 st.title(f"📊 Welcome, {st.session_state.username}!")
 st.success(
@@ -57,30 +68,25 @@ st.divider()
 #system overview
 st.header("System Overview")
 
-# Load data
-incidents = get_all_incidents()
-datasets = get_all_datasets()
-tickets = get_all_tickets()
-
 # Display metrics in columns
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric(" Incidents", len(incidents))
-    if len(incidents) > 0:
-        open_incidents = len(incidents[incidents['status'] == 'Open'])
+    st.metric(" Incidents", len(incidents_df))
+    if len(incidents_df) > 0:
+        open_incidents = len(incidents_df[incidents_df['status'] == 'Open'])
         st.caption(f"{open_incidents} open")
 
 with col2:
-    st.metric("🔬 Datasets", len(datasets))
-    if len(datasets) > 0:
-        total_rows = datasets['rows'].sum() if 'rows' in datasets.columns else 0
+    st.metric("🔬 Datasets", len(datasets_df))
+    if len(datasets_df) > 0:
+        total_rows = datasets_df['rows'].sum() if 'rows' in datasets_df.columns else 0
         st.caption(f"{total_rows:,} total rows")
 
 with col3:
-    st.metric("🖥️ Tickets", len(tickets))
-    if len(tickets) > 0:
-        open_tickets = len(tickets[tickets['status'] == 'Open'])
+    st.metric("🖥️ Tickets", len(tickets_df))
+    if len(tickets_df) > 0:
+        open_tickets = len(tickets_df[tickets_df['status'] == 'Open'])
         st.caption(f"{open_tickets} open")
 
 with col4:
@@ -96,22 +102,22 @@ st.header(" Recent Activity")
 tab1, tab2, tab3 = st.tabs([" Recent Incidents", " Recent Datasets", " Recent Tickets"])
 
 with tab1:
-    if len(incidents) > 0:
-        recent_incidents = incidents.head(5)
+    if len(incidents_df) > 0:
+        recent_incidents = incidents_df.head(5)
         st.dataframe(recent_incidents[['incident_id', 'timestamp', 'severity', 'category', 'status']])
     else:
         st.info("No incident data available.")
 
 with tab2:
-    if len(datasets) > 0:
-        recent_datasets = datasets.head(5)
+    if len(datasets_df) > 0:
+        recent_datasets = datasets_df.head(5)
         st.dataframe(recent_datasets[['dataset_id', 'name', 'rows', 'upload_date']])
     else:
         st.info("No dataset data available.")
 
 with tab3:
-    if len(tickets) > 0:
-        recent_tickets = tickets.head(5)
+    if len(tickets_df) > 0:
+        recent_tickets = tickets_df.head(5)
         st.dataframe(recent_tickets[['ticket_id', 'priority', 'status', 'assigned_to', 'created_at']])
     else:
         st.info("No ticket data available.")
@@ -162,7 +168,7 @@ with st.sidebar:
         st.session_state.user_role = ""
         st.session_state.user_data = {}
         st.info("You have been logged out.")
-        st.switch_page("home.py")
+        st.switch_page("OOP_home.py")
 
 # Footer
 st.divider()

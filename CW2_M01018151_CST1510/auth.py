@@ -25,7 +25,7 @@ def verify_password(plain_text_password, hashed_password):
     return bcrypt.checkpw(password_bytes, hashed_password_bytes)
 
 
-# ---------------- USER FILE CHECK ----------------
+# Checking for the user
 def user_exists(username):
     if not os.path.exists(USER_DATA_FILE):
         return False
@@ -38,7 +38,7 @@ def user_exists(username):
     return False
 
 
-# ---------------- INPUT VALIDATION ----------------
+# input validation (ChatGpt debugging)
 def validate_username(username):
     if len(username) < 3:
         return False, "Username must be at least 3 characters long."
@@ -65,7 +65,7 @@ def validate_password(password):
     return True, ""
 
 
-# ---------------- REGISTER + LOGIN ----------------
+# registration of user
 def register_user(username, password, role="user"):
     """Register a new user with role."""
     if user_exists(username):
@@ -79,7 +79,7 @@ def register_user(username, password, role="user"):
     print(f"User '{username}' registered with role '{role}'")
     return True
 
-
+#user login
 def login_user(username, password):
     """Authenticate a user and handle lockout."""
     global failed_attempts
@@ -129,7 +129,7 @@ def login_user(username, password):
     return False
 
 
-# ---------------- MENU SYSTEM ----------------
+# main system
 def display_menu():
     print("\n" + "="*50)
     print(" MULTI-DOMAIN INTELLIGENCE PLATFORM")
@@ -172,7 +172,7 @@ def main():
                 print("Error: Passwords do not match.")
                 continue
 
-            # ---- ROLE SELECTION ----
+            # role selection
             print("\nSelect a role for the user:")
             print("[1] User")
             print("[2] Admin")
@@ -212,3 +212,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#chatgpt was used to debug

@@ -1,25 +1,25 @@
 import streamlit as st
 from app.services.user_service import login_user, register_user
 
-st.title("🔐 Login to Intelligence Platform")
+st.title(" Login to Intelligence Platform")
 
-# Create tabs as in tutorial
+# Create tabs
 tab1, tab2 = st.tabs(["Login", "Register"])
 
 with tab1:
     st.header("Existing Users")
 
-    # Text input widget from tutorial
+    # Text input widget
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
-    # Button widget from tutorial
+    # Button widget
     if st.button("Login"):
         if username and password:
             success, message, user_data = login_user(username, password)
             if success:
-                st.success(f"Welcome, {username}! 👋")
-                # Set session state (we'll add proper session later)
+                st.success(f"Welcome, {username}! ")
+                # Set session state
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.rerun()
@@ -31,15 +31,15 @@ with tab1:
 with tab2:
     st.header("New User Registration")
 
-    # Registration form using tutorial widgets
+    # Registration form
     new_user = st.text_input("Choose Username")
     new_pass = st.text_input("Choose Password", type="password")
     confirm_pass = st.text_input("Confirm Password", type="password")
 
-    # Selectbox from tutorial
+    # Selectbox
     role = st.selectbox("Select Role", ["user", "analyst", "admin"])
 
-    # Checkbox from tutorial
+    # Checkbox
     agree = st.checkbox("I agree to terms and conditions")
 
     if st.button("Register"):
@@ -64,3 +64,5 @@ with st.expander("🔧 Test Credentials"):
     - Password: `SecurePass123!`
     - Role: `analyst`
     """)
+
+#main code from tutorial and debuged using Chat GPT

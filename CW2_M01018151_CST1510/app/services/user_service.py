@@ -6,7 +6,7 @@ from app.data.users import get_user_by_username, insert_user
 
 
 def register_user(username, password, role="user"):
-    """Register a new user - SIMPLE VERSION."""
+    """Register a new user."""
     conn = connect_database()
     cursor = conn.cursor()
 
@@ -34,7 +34,7 @@ def register_user(username, password, role="user"):
 
 
 def login_user(username, password):
-    """Authenticate a user - FIXED VERSION (returns 3 values)."""
+    """Authenticate a user."""
     user = get_user_by_username(username)
     if not user:
         return False, "Username not found.", None  # ← ADDED None as 3rd value
@@ -58,10 +58,10 @@ def login_user(username, password):
 
 
 def migrate_users_from_file(filepath='DATA/users.txt'):
-    """Migrate users from text file to database - SIMPLE VERSION."""
+    """Migrate users from text file to database."""
     filepath = Path(filepath)
     if not filepath.exists():
-        print(f"⚠️ File not found: {filepath}")
+        print(f" File not found: {filepath}")
         return 0
 
     conn = connect_database()
@@ -91,15 +91,15 @@ def migrate_users_from_file(filepath='DATA/users.txt'):
 
     conn.commit()
     conn.close()
-    print(f"✅ Migrated {migrated_count} users from {filepath.name}")
+    print(f"Migrated {migrated_count} users from {filepath.name}")
     return migrated_count
 
 
 def load_csv_to_table(csv_path, table_name):
-    """Load CSV data into database table - SIMPLE VERSION."""
+    """Load CSV data into database table"""
     csv_path = Path(csv_path)
     if not csv_path.exists():
-        print(f"❌ CSV file not found: {csv_path}")
+        print(f" CSV file not found: {csv_path}")
         return 0
 
     conn = connect_database()
@@ -111,7 +111,7 @@ def load_csv_to_table(csv_path, table_name):
         count = cursor.fetchone()[0]
 
         if count > 0:
-            print(f"⚠️  Skipping {table_name} - already has {count} rows")
+            print(f"  Skipping {table_name} - already has {count} rows")
             return 0
 
         df = pd.read_csv(csv_path)
@@ -121,17 +121,17 @@ def load_csv_to_table(csv_path, table_name):
             if_exists='append',
             index=False
         )
-        print(f"✅ Loaded {rows_loaded} rows into {table_name} table")
+        print(f" Loaded {rows_loaded} rows into {table_name} table")
         return rows_loaded
     except Exception as e:
-        print(f"❌ Error loading {csv_path}: {e}")
+        print(f"Error loading {csv_path}: {e}")
         return 0
     finally:
         conn.close()
 
 
 def load_all_csv_data():
-    """Load all CSV files into database - SIMPLE VERSION."""
+    """Load all CSV files into database"""
     csv_files = {
         'cyber_incidents': 'DATA/cyber_incidents.csv',
         'datasets_metadata': 'DATA/datasets_metadata.csv',
@@ -144,3 +144,5 @@ def load_all_csv_data():
         total_rows += rows_loaded
 
     return total_rows
+
+#Chat Gpt was used to debug this file

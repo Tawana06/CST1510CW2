@@ -21,7 +21,7 @@ def main():
     migrate_users_from_file()
 
     # 3. Test authentication
-    print("\n🔐 Testing authentication...")
+    print("\n Testing authentication...")
     success, msg = register_user("alice", "SecurePass123!", "analyst")
     print(f"  {msg}")
 
@@ -29,7 +29,7 @@ def main():
     print(f"  {msg}")
 
     # 4. Load CSV data
-    print("\n📂 Loading CSV data...")
+    print("\n Loading CSV data...")
     total_rows = load_all_csv_data()
     print(f"  Loaded {total_rows} total rows")
 
@@ -46,7 +46,7 @@ def main():
     print(f"  Created incident #{incident_id}")
 
     # 6. Query data
-    print("\n📊 Querying data...")
+    print("\n Querying data...")
 
     incidents = get_all_incidents()
     print(f"  Total incidents: {len(incidents)}")
@@ -74,10 +74,10 @@ def main():
         print(f"  Ticket summary: {ticket_summary[0]} tickets, {ticket_summary[2]} open")
 
     print("\n" + "=" * 60)
-    print("🎉 Demo completed successfully!")
+    print(" Demo completed successfully!")
     print("=" * 60)
 
-    print("\n📁 Database Summary:")
+    print("\n Database Summary:")
     print(f"  • Users: {len(users)}")
     print(f"  • Incidents: {len(incidents)}")
     print(f"  • Datasets: {len(datasets)}")
@@ -86,3 +86,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#test to see if Streamlit works
+#debugging using ChatGpt

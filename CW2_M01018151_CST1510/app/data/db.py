@@ -3,7 +3,7 @@ import os
 
 
 def connect_database():
-    """ULTRA-SIMPLE fixed path connection"""
+    """ fixed path connection"""
     # Use absolute Windows path
     db_path = r"C:\Users\gwati\PycharmProjects\newproject\CW2_M01018151_CST1510\DATA\intelligence_platform.db"
 

@@ -14,7 +14,7 @@ def create_users_table(conn):
     """
     cursor.execute(create_table_sql)
     conn.commit()
-    print("✅ Users table created successfully!")
+    print(" Users table created successfully!")
 
 def create_cyber_incidents_table(conn):
     """Create the cyber_incidents table."""
@@ -31,7 +31,7 @@ def create_cyber_incidents_table(conn):
     """
     cursor.execute(create_table_sql)
     conn.commit()
-    print("✅ Cyber incidents table created successfully!")
+    print("Cyber incidents table created successfully!")
 
 def create_datasets_metadata_table(conn):
     """Create the datasets_metadata table."""
@@ -48,7 +48,7 @@ def create_datasets_metadata_table(conn):
     """
     cursor.execute(create_table_sql)
     conn.commit()
-    print("✅ Datasets metadata table created successfully!")
+    print(" Datasets metadata table created successfully!")
 
 def create_it_tickets_table(conn):
     """Create the it_tickets table."""
@@ -66,7 +66,7 @@ def create_it_tickets_table(conn):
     """
     cursor.execute(create_table_sql)
     conn.commit()
-    print("✅ IT tickets table created successfully!")
+    print("IT tickets table created successfully!")
 
 def create_all_tables(conn):
     """Create all database tables."""
@@ -74,4 +74,4 @@ def create_all_tables(conn):
     create_cyber_incidents_table(conn)
     create_datasets_metadata_table(conn)
     create_it_tickets_table(conn)
-    print("🎉 All tables created successfully!")
+    print(" All tables created successfully!")

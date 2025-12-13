@@ -1,8 +1,8 @@
-
-#.streamlit run C:\Users\gwati\PycharmProjects\newproject\CW2_M01018151_CST1510\home.py
-
+#streamlit run C:\Users\gwati\PycharmProjects\newproject\CW2_M01018151_CST1510\multi_domain_platform\OOP_home.py [ARGUMENTS]
+import os
 import streamlit as st
-from app.services.user_service import login_user, register_user
+from services.database_manager import DatabaseManager
+from services.auth_manager import AuthManager
 
 # Page configuration
 st.set_page_config(
@@ -10,6 +10,18 @@ st.set_page_config(
     page_icon="🔑",
     layout="centered"
 )
+current_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(current_dir, "intelligence_platform.db")
+
+print(f"Database path: {db_path}")
+
+# Create DatabaseManager and AuthManager
+try:
+    db = DatabaseManager(db_path)
+    auth = AuthManager(db)
+except Exception as e:
+    st.error(f"Failed to initialize database: {e}")
+    st.stop()
 
 # initialisation
 if "logged_in" not in st.session_state:
@@ -23,24 +35,26 @@ if "user_data" not in st.session_state:
 
 st.title(" Multi-Domain Intelligence Platform")
 
-
 # If already logged in, go straight to dashboard
 if st.session_state.logged_in:
     st.success(f"Already logged in as **{st.session_state.username}** ({st.session_state.user_role}).")
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         if st.button(" Go to Dashboard", type="primary"):
-            st.switch_page("pages/dashboard.py")
+            st.switch_page("pages/2_Dashboard.py")
     with col2:
         if st.button(" Cybersecurity"):
-            st.switch_page("pages/cybersecurity.py")
+            st.switch_page("pages/3_Cybersecurity.py")
     with col3:
-        if st.button(" IT Operations"):
-            st.switch_page("pages/it_operations.py")
-    with col4:  
+        if st.button("Data Science"):
+            st.switch_page("pages/4_Data_Science.py")
+    with col4:
+        if st.button("IT Operations"):
+            st.switch_page("pages/5_IT_Operations.py")
+    with col5:
         if st.button("🤖 AI Chat"):
-            st.switch_page("pages/gemini_chat.py")
+            st.switch_page("pages/6_AI_Assistant.py")
 
     if st.button(" Logout"):
         # Clear session state
@@ -64,22 +78,25 @@ with tab_login:
 
     if st.button("Login", type="primary", key="login_button"):
         if login_username and login_password:
-            # Use your actual database authentication
-            success, message, user_data = login_user(login_username, login_password)
+            # Use AuthManager for authentication
+            user = auth.login_user(login_username, login_password)
 
-            if success:
+            if user:
                 # Set session state
                 st.session_state.logged_in = True
-                st.session_state.username = login_username
-                st.session_state.user_role = user_data.get('role', 'user')
-                st.session_state.user_data = user_data
+                st.session_state.username = user.get_username()
+                st.session_state.user_role = user.get_role()
+                st.session_state.user_data = {
+                    'username': user.get_username(),
+                    'role': user.get_role()
+                }
 
                 st.success(f"Welcome back, {login_username}! ")
 
                 # Redirect to dashboard
-                st.switch_page("pages/dashboard.py")
+                st.switch_page("pages/2_dashboard.py")
             else:
-                st.error(message)
+                st.error("Login failed: Invalid username or password")
         else:
             st.warning("Please enter username and password")
 
@@ -116,18 +133,28 @@ with tab_register:
         elif new_password != confirm_password:
             st.error("Passwords do not match.")
         else:
-            # Use your actual database registration
-            success, message = register_user(new_username, new_password, role)
-
-            if success:
-                st.success("Account created! You can now log in from the Login tab.")
-                st.info("Tip: Go to the Login tab and sign in with your new account.")
-
-                # Auto-fill login form
-                st.session_state.login_username = new_username
-                st.session_state.login_password = new_password
+            # Validate username
+            is_valid_username, username_error = auth.validate_username(new_username)
+            if not is_valid_username:
+                st.error(username_error)
             else:
-                st.error(message)
+                # Validate password
+                is_valid_password, password_error = auth.validate_password(new_password)
+                if not is_valid_password:
+                    st.error(password_error)
+                else:
+                    # Use AuthManager for registration
+                    success = auth.register_user(new_username, new_password, role)
+
+                    if success:
+                        st.success("Account created! You can now log in from the Login tab.")
+                        st.info("Tip: Go to the Login tab and sign in with your new account.")
+
+                        # Auto-fill login form
+                        st.session_state.login_username = new_username
+                        st.session_state.login_password = new_password
+                    else:
+                        st.error(f"Registration failed: Username '{new_username}' may already exist")
 
 # Show test credentials
 with st.expander("🔧 Test Credentials"):
@@ -144,5 +171,3 @@ with st.expander("🔧 Test Credentials"):
 # Footer
 st.divider()
 st.caption(" Multi-domain intelligence platform for CST1510 Coursework 2")
-
-#codes from tutorial and debugging using Chatgpt

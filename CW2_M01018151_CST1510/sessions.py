@@ -1,7 +1,3 @@
-"""
-Session management utilities
-"""
-
 import streamlit as st
 
 def init_session():
@@ -40,5 +36,5 @@ def require_login():
 def require_role(required_role):
     """Check if user has required role."""
     if st.session_state.user_role != required_role:
-        st.error(f"⛔ Access denied. {required_role} role required.")
+        st.error(f" Access denied. {required_role} role required.")
         st.stop()
